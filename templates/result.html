@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>검색 결과</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
+        {% if results %}
+            {% for data in results %}
+            <div class="mb-8 border-b pb-4">
+                <h1 class="text-3xl font-bold text-center mb-4">{{ data['포켓몬'] }}</h1>
+                <div class="flex items-center space-x-6">
+                    <!-- 포켓몬 이미지 -->
+                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ data['도감번호'] }}.png"
+                        alt="포켓몬 이미지" class="w-48 h-48 rounded-lg">
+                    
+                    <!-- 포켓몬 정보 테이블 -->
+                    <table class="w-full text-left">
+                        <tr><th class="pr-4 font-semibold">도감번호:</th><td>{{ data['도감번호'] }}</td></tr>
+                        <tr><th class="pr-4 font-semibold">타입:</th><td>{{ data['타입'] or '정보 없음' }}</td></tr>
+                        <tr><th class="pr-4 font-semibold">종족값:</th><td>{{ data['종족값'] or '정보 없음' }}</td></tr>
+                        <tr><th class="pr-4 font-semibold">스폰 시간대:</th><td>{{ data['스폰 시간대'] or '정보 없음' }}</td></tr>
+                        <tr><th class="pr-4 font-semibold">스폰 바이옴:</th><td>{{ data['스폰 바이옴'] or '정보 없음' }}</td></tr>
+                        <tr><th class="pr-4 font-semibold">희귀도:</th><td>{{ data['희귀도'] or '정보 없음' }}</td></tr>
+                        <tr><th class="pr-4 font-semibold">날씨/위치 조건:</th><td>{{ data['날씨/위치 조건'] or '정보 없음' }}</td></tr>
+                        <tr><th class="pr-4 font-semibold">폼체인지/메가진화 정보:</th><td>{{ data['폼체인지/메가진화 정보'] or '정보 없음' }}</td></tr>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="mt-6 text-center">
+                <a href="/" class="text-blue-500 text-lg font-semibold">🔙 돌아가기</a>
+            </div>
+        {% else %}
+            <h1 class="text-2xl font-bold text-center">검색 결과 없음</h1>
+            <p class="text-center text-gray-600">다른 포켓몬을 검색해 주세요.</p>
+            <div class="mt-6 text-center">
+                <a href="/" class="text-blue-500 text-lg font-semibold">🔙 돌아가기</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

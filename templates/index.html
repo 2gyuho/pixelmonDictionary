@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>포켓몬 검색</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        .pokemon-font {
+            font-family: 'Jua', serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        async function searchPokemon() {
+            let query = document.getElementById("searchBox").value.trim();
+            let resultsContainer = document.getElementById("searchResults");
+    
+            if (query.length < 1) {
+                resultsContainer.innerHTML = ""; // 검색어가 없으면 리스트 숨기기
+                return;
+            }
+    
+            try {
+                let response = await fetch(`/api/search?query=${query}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                let results = await response.json();
+                resultsContainer.innerHTML = ""; // 기존 리스트 초기화
+    
+                let addedPokemon = new Set(); // 중복 방지를 위한 Set
+    
+                results.forEach(pokemon => {
+                    let dexNumber = pokemon['도감번호'];
+                    let pokemonName = pokemon['포켓몬'];
+    
+                    // 같은 도감번호의 대표 포켓몬만 추가
+                    if (!addedPokemon.has(dexNumber)) {
+                        addedPokemon.add(dexNumber);
+    
+                        let listItem = document.createElement("div");
+                        listItem.className = "flex items-center px-4 py-2 border-b bg-gray-100 hover:bg-gray-200 cursor-pointer";
+    
+                        let pokemonImage = document.createElement("img");
+                        pokemonImage.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${dexNumber}.png`;
+                        pokemonImage.alt = "포켓몬 이미지";
+                        pokemonImage.className = "w-10 h-10 mr-3";
+    
+                        let textContainer = document.createElement("div");
+                        textContainer.innerHTML = `<strong>${String(dexNumber).padStart(3, '0')}</strong> - ${pokemonName}`;
+    
+                        listItem.appendChild(pokemonImage);
+                        listItem.appendChild(textContainer);
+    
+                        listItem.onclick = function() {
+                            window.location.href = `/search?query=${pokemonName}`;
+                        };
+    
+                        resultsContainer.appendChild(listItem);
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching search results:", error);
+                resultsContainer.innerHTML = `<p class="text-red-500">검색 결과를 불러올 수 없습니다.</p>`;
+            }
+        }
+    </script>
+    
+</head>
+<body class="bg-gray-100 flex justify-center items-center pt-20">
+    <div class="w-full flex flex-col items-center">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" 
+                alt="포켓몬 이미지" class="w-40 h-40 mb-2">
+        <h1 class="pokemon-font text-5xl mt-4 text-center drop-shadow-lg">픽셀몬 도감</h1>
+
+        <div class="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg text-center mt-6">
+            <!-- 검색창 -->
+            <input type="text" id="searchBox" onkeyup="searchPokemon()" 
+                placeholder="포켓몬 이름 또는 도감번호 입력" 
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+            <!-- 검색 Preview 리스트 -->
+            <div id="searchResults" class="mt-2 border border-black rounded-lg"></div>
+        </div>
+    </div>
+</body>
+</html>
